@@ -1,0 +1,4 @@
+#!/bin/sh
+# chris 032515
+real=`realpath $0`
+PYTHONPATH=`dirname $real`/lib exec python -m ytdl.main "$@"
