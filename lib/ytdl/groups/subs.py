@@ -74,28 +74,28 @@ class Subs(DbGroup):
   def latesti(self,save):
     chids = self.read()
     if chids is None: raise Error(127,self.errnodb)
-    seen = self.seen().read()
-    if seen is None: seen = {}
+    seenmap = self.seen().saferead()
 
     for chid in chids:
-      last = seen.get(chid)
-      self.log('channel %s last %s' % (chid,last))
-      sawnew = False
-      # If we've never queried this channel before, don't fetch
-      # tons--just fetch the single most recent video.
-      limit = 1 if last is None else 0
-      for vid in self.client().uploads(chid,limit=limit):
+      seen = seenmap.get(chid)
+      self.log('channel %s seen %s' % (chid,self.seen().short(seen)))
+      newseen = []
+      for vid in self.client().uploads(chid):
         self.log('video %s' % vid)
-        if vid == last: break
-        yield vid
-        self.log('new video %s' % vid)
-        if not sawnew:
-          sawnew = True
-          # Record first-seen new video ID as new last, since they're
-          # given to us by the APi in the order of most-recent first.
-          seen[chid] = vid
-          self.log('new last %s' % vid)
+        # If we've never seen anything from this channel before, don't
+        # yield anything; instead, just populate seen list.
+        if seen is None:
+          newseen.append(vid)
+          if len(newseen) == self.seen().seenmax: break
+        else:
+          if vid in seen: break
+          yield vid
+          self.log('new video %s' % vid)
+          newseen.append(vid)
+      if newseen:
+        seen = newseen if seen is None else newseen + seen
+        seenmap[chid] = seen[:self.seen().seenmax]
 
     if save:
-      self.seen().write(seen)
+      self.seen().write(seenmap)
   def clear(self,args): os.unlink(self.dbpath())

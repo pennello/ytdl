@@ -4,8 +4,17 @@ import os
 from .bases import DbGroup
 
 class Seen(DbGroup):
-  # data format: {chid:vid,...}
-  dbname = 'seen.db'
+  dbname = 'seen.db' # data format: {chid:[vid,...],...}
+  lsmax = 3          # maximum number of recent videos to list
+  seenmax = 100      # maximum number of seen videos per channel to store
+
+  @classmethod
+  def short(cls,vids):
+    if vids is None: return ''
+    el = len(vids) > cls.lsmax
+    vids = ' '.join(vids[:cls.lsmax])
+    if el: vids += ' ...'
+    return vids
 
   def parse(self,cmdgrp):
     descr = 'Seen state management.'
@@ -16,10 +25,15 @@ class Seen(DbGroup):
     descr = 'Clear entirety of seen state.'
     clear = seen_commands.add_parser('clear',description=descr,help=descr)
 
+  def saferead(self):
+    seen = self.read()
+    if seen is None: seen = {}
+    return seen
+
   def ls(self,args):
     seen = self.read()
     if seen is None: return 127
-    for chid,vid in seen.iteritems():
-      self.out('%s %s' % (chid,vid))
+    for chid,vids in seen.iteritems():
+      self.out('%s %s' % (chid,self.short(vids)))
 
   def clear(self,args): os.unlink(self.dbpath())
