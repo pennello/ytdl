@@ -24,12 +24,10 @@ class Client(object):
     url = '%s/%s?%s' % (self.base,path,urlencode(params))
     with closing(urlopen(url)) as u: return json.load(u)
 
-  # Utility function for making paginated calls.  A limit of 0 still
-  # means no limit.
-  def pcall(self,path,params,itemfn,limit=None):
+  # Utility function for making paginated calls.
+  def pcall(self,path,params,itemfn):
     token = None
     params = params.copy()
-    n = 0
     while True:
       if token is not None: params['pageToken'] = token
       data = self.call(path,params)
@@ -37,8 +35,6 @@ class Client(object):
         x = itemfn(item)
         if x is None: continue
         yield x
-        n += 1
-        if n == limit: return
       if 'nextPageToken' not in data: break
       token = data['nextPageToken']
 
@@ -58,20 +54,20 @@ class Client(object):
     for x in self.pcall('subscriptions',params,itemfn): yield x
 
   # Yield titles for channels or playlists indicated by channel or
-  # playlist IDs.  type: 'channels' or 'playlists'.  Performs batched
+  # playlist IDs.  type: 'channel' or 'playlist'.  Performs batched
   # calls.
   def titles(self,type,ids):
     def call(ids):
       params = dict(part='snippet',id=','.join(ids))
       def itemfn(item):
         return item['snippet']['title']
-      for x in self.pcall(type,params,itemfn): yield x
+      for x in self.pcall(type + 's',params,itemfn): yield x
     for seg in util.segment(ids,self.batchsize):
       for x in call(seg): yield x
 
   # Yield YouTube video IDs of uploads made by the channel with the
   # given channel ID.
-  def uploads(self,channelid,limit=None):
+  def uploads(self,channelid):
     params = dict(part='contentDetails',channelId=channelid)
     def itemfn(item):
       # XXX Sometimes contentDetails is not present despite having been
@@ -80,17 +76,17 @@ class Client(object):
       if cd is None: return None
       if 'upload' not in cd: return None
       return cd['upload']['videoId']
-    for x in self.pcall('activities',params,itemfn,limit): yield x
+    for x in self.pcall('activities',params,itemfn): yield x
 
   # Yield YouTube video IDs of videos in the playlist with the given
   # playlist ID.
-  def items(self,playlistid,limit=None):
+  def items(self,playlistid):
     params = dict(part='contentDetails',playlistId=playlistid)
     def itemfn(item):
       return item['contentDetails']['videoId']
-    for x in self.pcall('playlistitems',params,itemfn,limit): yield x
+    for x in self.pcall('playlistItems',params,itemfn): yield x
 
-  # type: 'channels' or 'playlists'
-  def isvalid(self,type,id):
+  # type: 'channel' or 'playlist'
+  def isvalid(self,(type,id)):
     params = dict(part='id',id=id)
-    return bool(self.call(type,params)['pageInfo']['totalResults'])
+    return bool(self.call(type + 's',params)['pageInfo']['totalResults'])

@@ -1,34 +1,40 @@
 # chris 032615
 
-import os
-from itertools import izip
-from .bases import DbGroup,Error
+from ..subs import Sub,NotFound,AlreadyExists
+from .bases import Group,Error
 
-class Subs(DbGroup):
+class Subs(Group):
   # data format: [chid,...]
   dbname = 'subs.db'
 
-  errinval = 'invalid channel id (not found in youtube api call)'
-  errnodb = 'subs db not found (import or add first)'
+  errinval = 'invalid id (not found in youtube api call)'
 
   def parse(self,cmdgrp):
     descr = 'Manage subscriptions.'
     subs = cmdgrp.add_parser('subs',description=descr,help=descr)
     subs_commands = subs.add_subparsers(dest='command',metavar='command')
+
     descr = 'Import subscriptions from YouTube. Overwrites local DB.'
     import_ = subs_commands.add_parser('import',description=descr,help=descr)
     import_.add_argument('channelid',help='channel id of user whose '
       'subscriptions to import')
-    descr = 'Remove subscription.'
-    rm = subs_commands.add_parser('rm',description=descr,help=descr)
-    rm.add_argument('channelid',help='channel id to remove')
-    descr = 'List subscriptions.'
+
+    descr = ('List subscriptions. Optionally, list all seen video IDs for a '
+     'given subscription.')
     ls = subs_commands.add_parser('ls',description=descr,help=descr)
-    ls.add_argument('-t','--with-titles',action='store_true',default=False,
-      help='include channel titles (via api calls); defaults to %(default)s')
+    ls.add_argument('type',nargs='?',help='subscription type')
+    ls.add_argument('id',nargs='?',help='subscription id')
+
     descr = 'Add subscription. Performs validation.'
     add = subs_commands.add_parser('add',description=descr,help=descr)
-    add.add_argument('channelid',help='channel id to add')
+    add.add_argument('type',choices=Sub.types.keys(),help='subscription type')
+    add.add_argument('id',help='subscription id')
+
+    descr = 'Remove subscription.'
+    rm = subs_commands.add_parser('rm',description=descr,help=descr)
+    rm.add_argument('type',choices=Sub.types.keys(),help='subscription type')
+    rm.add_argument('id',help='subscription id')
+
     descr=('Fetch and print video IDs of latest uploads from subscriptions. '
       'Uses seen state to avoid re-printing video IDs of uploads already '
       'seen. Combined with the -s option, makes for ideal periodic input to '
@@ -36,66 +42,42 @@ class Subs(DbGroup):
     latest = subs_commands.add_parser('latest',description=descr,help=descr)
     latest.add_argument('-s','--save',action='store_true',default=False,
       help='save latest video ids; defaults to %(default)s')
-    descr = 'Clear local subscription database.'
-    clear = subs_commands.add_parser('clear',description=descr,help=descr)
-
-  def seen(self): return self.main.groups['seen']
 
   def import_(self,args):
-    if not self.client().isvalid('channels',args.channelid):
+    if not self.client().isvalid(('channel',args.channelid)):
       raise Error(1,self.errinval)
-    self.write(list(self.client().subs(args.channelid)))
-  def rm(self,args):
-    chids = self.read()
-    if chids is None: raise Error(127,self.errnodb)
-    try: chids.remove(args.channelid)
-    except ValueError: raise Error(1,'channel id not already present')
-    self.write(chids)
+    for chid in self.client().subs(args.channelid):
+      self.db().add(('channel',chid))
+
   def ls(self,args):
-    chids = self.read()
-    if chids is None: raise Error(127,self.errnodb)
-    if args.with_titles:
-      titles = self.client().titles('channels',chids)
-      for chid,title in izip(chids,titles):
-        self.out('%s %s' % (chid,title))
+    if args.type and args.id:
+      sub = self.db().load((args.type,args.id))
+      for vid in sub.seen:
+        self.out(vid)
     else:
-      for chid in chids: self.out(chid)
+      for sub in self.db().loadall(): self.out(sub)
+
   def add(self,args):
-    if not self.client().isvalid('channels',args.channelid):
+    key = args.type,args.id
+    if not self.client().isvalid(key):
       raise Error(1,self.errinval)
-    chids = self.read() or []
-    if args.channelid in chids:
-      raise Error(1,'channel id already present')
-    chids.append(args.channelid)
-    self.write(chids)
+    try: self.db().add(key)
+    except AlreadyExists:
+      raise Error(1,'subscription already present')
+
+  def rm(self,args):
+    key = args.type,args.id
+    try: self.db().rm(key)
+    except NotFound:
+      raise Error(1,'channel id not found')
+
   def latest(self,args):
-    for vid in self.latesti(args.save):
-      self.out(vid)
+    for vid in self.latesti(args.save): self.out(vid)
+
   def latesti(self,save):
-    chids = self.read()
-    if chids is None: raise Error(127,self.errnodb)
-    seenmap = self.seen().saferead()
-
-    for chid in chids:
-      seen = seenmap.get(chid)
-      self.log('channel %s seen %s' % (chid,self.seen().short(seen)))
-      newseen = []
-      for vid in self.client().uploads(chid):
-        self.log('video %s' % vid)
-        # If we've never seen anything from this channel before, don't
-        # yield anything; instead, just populate seen list.
-        if seen is None:
-          newseen.append(vid)
-          if len(newseen) == self.seen().seenmax: break
-        else:
-          if vid in seen: break
-          yield vid
-          self.log('new video %s' % vid)
-          newseen.append(vid)
-      if newseen:
-        seen = newseen if seen is None else newseen + seen
-        seenmap[chid] = seen[:self.seen().seenmax]
-
-    if save:
-      self.seen().write(seenmap)
-  def clear(self,args): os.unlink(self.dbpath())
+    for sub in self.db().loadall():
+      self.log(sub)
+      for vid in sub.latest():
+        self.log('new video %s' % vid)
+        yield vid
+      if save: self.db().save(sub)

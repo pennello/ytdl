@@ -2,8 +2,6 @@
 
 import os.path
 from contextlib import contextmanager
-import errno
-import json
 from .. import util
 
 class Error(Exception):
@@ -23,15 +21,4 @@ class Group(object):
     logpath = self.logpath(name)
     util.makedirs(os.path.dirname(logpath),exist_ok=True)
     with open(logpath,'ab') as logfile: yield logfile
-
-class DbGroup(Group):
-  def dbpath(self): return self.main.dbpath(self.dbname)
-  def read(self):
-    try:
-      with open(self.dbpath(),'rb') as f: return json.load(f)
-    except IOError,e:
-      if e.errno != errno.ENOENT: raise
-      return None
-  def write(self,data):
-    util.makedirs(self.main.dbpath(),exist_ok=True)
-    with open(self.dbpath(),'wb') as f: json.dump(data,f)
+  def db(self): return self.main.db

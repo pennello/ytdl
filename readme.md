@@ -23,12 +23,11 @@ Files
 -----
  - `$HOME/bin/ytdl` (via `install.sh`)
  - `$HOME/etc/ytdl.conf`
- - `$HOME/var/db/ytdl/*.db` (created at runtime)
+ - `$HOME/var/db/ytdl/*` (created at runtime)
  - `$HOME/var/log/ytdl/cron_dlsubs.log` (created by `cron dlsubs`)
 
 Future Work
 -----------
-Playlist subscriptions.
 Write man page.
 Write extensive Pydoc documentation.
 Write goals/background documentation.
