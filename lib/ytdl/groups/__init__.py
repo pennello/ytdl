@@ -4,6 +4,5 @@
 from .bases import Error
 from .id import Id
 from .subs import Subs
-from .seen import Seen
 from .clip import Clip
 from .cron import Cron

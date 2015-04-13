@@ -9,15 +9,17 @@ from collections import OrderedDict
 
 from . import client,groups,util
 from .ssl import noverify
+from .subs import Db
 
 class Main(object):
   def __init__(self,fullprog,*argv):
     self.prog = os.path.basename(fullprog)
     self.conf = self.makeconf()
+    self.db = Db(self)
+    self.db.init()
     self.groups = OrderedDict(
       id  =groups.Id(self),
       subs=groups.Subs(self),
-      seen=groups.Seen(self),
       clip=groups.Clip(self),
       cron=groups.Cron(self),
     )
@@ -45,9 +47,9 @@ class Main(object):
     for group in self.groups.itervalues(): group.parse(cmdgrp)
     return parser.parse_args(argv)
 
-  def log(self,msg):
-    if self.args.verbose: util.log(msg)
-  def error(self,msg): util.log('error: %s' % msg)
+  def log(self,x):
+    if self.args.verbose: util.log(x)
+  def error(self,x): util.log('error: %s' % x)
 
   def run(self):
     noverify()
