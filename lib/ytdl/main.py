@@ -59,6 +59,9 @@ class Main(object):
     except groups.Error,e:
       self.error(e.msg)
       return e.code
+    except KeyboardInterrupt:
+      self.error('caught interrupt')
+      return 1
     return 0
 
 # argv passed in from wrapper script with name of executable as first
