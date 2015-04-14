@@ -1,4 +1,4 @@
-# chris 032515
+# chris 032515 Package-relative entry point.  Loaded by __main__.
 
 import os.path
 import sys
@@ -66,6 +66,4 @@ class Main(object):
       return 1
     return 0
 
-# argv passed in from wrapper script with name of executable as first
-# argument
-sys.exit(Main(*sys.argv[1:]).run())
+sys.exit(Main(*sys.argv).run())
