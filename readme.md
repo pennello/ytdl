@@ -12,16 +12,17 @@ used when making calls to the YouTube Data API (v3).
 
 Installation
 ------------
-Run `sh install.sh`.  It will symlink `ytdl` into `$HOME/bin`.
+Simply run `make && sudo make install`.  The `Makefile` takes advantage
+of GNU extensions; therefore, you will want to use `gmake` on FreeBSD.
+The `Makefile` supports `DESTDIR`.
 
 Running
 -------
-Run `ytdl`.  It's a wrapper for the Python code in the `ytdl` package
-which is inside the `lib` directory.
+Run `ytdl`.
 
 Files
 -----
- - `$HOME/bin/ytdl` (via `install.sh`)
+ - `/usr/local/bin/ytdl` (via `make install`)
  - `$HOME/etc/ytdl.conf`
  - `$HOME/var/db/ytdl/*` (created at runtime)
  - `$HOME/var/log/ytdl/cron_dlsubs.log` (created by `cron dlsubs`)

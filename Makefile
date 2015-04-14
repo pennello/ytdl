@@ -1,6 +1,8 @@
 # chris 041315
 
-.PHONY: clean
+.PHONY: install uninstall clean
+
+DESTDIR = /usr/local
 
 name = ytdl
 bin = $(name)
@@ -19,3 +21,9 @@ $(zip): $(pyo)
 
 clean:
 	rm -f $(bin) $(zip) $(pyo)
+
+install:
+	install $(bin) $(DESTDIR)/bin/$(bin)
+
+uninstall:
+	rm $(DESTDIR)/bin/$(bin)
