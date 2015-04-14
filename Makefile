@@ -1,0 +1,21 @@
+# chris 041315
+
+.PHONY: clean
+
+name = ytdl
+bin = $(name)
+zip = $(name).zip
+pyo = $(patsubst %.py, %.pyo, $(shell find src -name '*.py'))
+
+$(bin): src/header $(zip)
+	cat $^ > $@
+	chmod +x $@
+
+$(zip): $(pyo)
+	cd src && echo $(patsubst src/%, %, $^) | xargs zip -9 ../$@
+
+%.pyo: %.py
+	python -OOm py_compile $^
+
+clean:
+	rm -f $(bin) $(zip) $(pyo)
