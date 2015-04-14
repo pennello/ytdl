@@ -29,6 +29,7 @@ Files
 
 Future Work
 -----------
-Write man page.
-Write extensive Pydoc documentation.
-Write goals/background documentation.
+- Write man page.
+- Write extensive Pydoc documentation.
+- Write goals/background documentation.
+- Don't require config for `clip listen`.
