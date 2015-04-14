@@ -1,4 +1,4 @@
-# chris 041315 Maini entry point.
+# chris 041315 Main entry point.
 
 import runpy
 
