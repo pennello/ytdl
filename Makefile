@@ -14,6 +14,7 @@ $(bin): src/header $(zip)
 	chmod +x $@
 
 $(zip): $(pyo)
+	rm -f $@
 	cd src && echo $(patsubst src/%, %, $^) | xargs zip -9 ../$@
 
 %.pyo: %.py
