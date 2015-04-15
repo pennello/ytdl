@@ -11,6 +11,7 @@ class Error(Exception):
 
 class Group(object):
   def __init__(self, main): self.main = main
+  def prog(self): return self.main.prog
   def parse(self,cmdgrp): raise NotImplementedError()
   def client(self): return self.main.client
   def log(self,*a): self.main.log(*a)

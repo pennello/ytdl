@@ -2,9 +2,11 @@
 
 import time
 import subprocess
-from .. import youtubedl
 try: from .. import clipboard
 except ImportError: clipboard = None
+try: from ..notify import notify
+except ImportError: notify = None
+from .. import youtubedl
 from .bases import Group,Error
 
 class Clip(Group):
@@ -32,9 +34,13 @@ class Clip(Group):
     self.data = ()    # Will store content from the clipboard.
     self.stamp = None # Time of the most recent data addition.
 
+  def notify(self,msg):
+    if notify is not None: notify(self.prog(),'clip listen',msg)
+    self.out(msg)
+
   def popen(self, wait):
     args = youtubedl.args(self.data)
-    self.out('invoking %s' % args[0])
+    self.notify('invoking %s' % args[0])
     p = subprocess.Popen(args)
     if wait: p.wait()
 
@@ -49,7 +55,7 @@ class Clip(Group):
       if self.match(x):
         self.stamp = time.time()
         self.data += x,
-        self.out('got %s' % x)
+        self.notify('got %s' % x)
     if self.check():
       self.popen(False)
       self.reset()
