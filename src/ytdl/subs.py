@@ -69,6 +69,13 @@ Sub.types += Playlist,
 Sub.types = dict((cls.type(),cls) for cls in Sub.types)
 
 class Db(object):
+  # Subscription IDs are stored as files on the filesystem, so if other
+  # junk files get into the database directories somehow, we want to
+  # ignore them.
+  @staticmethod
+  def isjunk(id):
+    return id.startswith('.') and 'DS_Store' in id
+
   def __init__(self,main): self.main = main
 
   def typetopath(self,type):
@@ -88,8 +95,7 @@ class Db(object):
   def allkeys(self):
     for type in Sub.types.iterkeys():
       for id in os.listdir(self.typetopath(type)):
-        # Ignore junk.
-        if id.startswith('.') and 'DS_Store' in id: continue
+        if self.isjunk(id): continue
         yield type,id
 
   def load(self,key):
