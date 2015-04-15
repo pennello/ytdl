@@ -14,6 +14,7 @@ ver = 2,7,9
 # https://github.com/mtschirs/quizduellapi/issues/2
 # http://linux.debian.bugs.dist.narkive.com/Fa81q1tS/bug-769542-rss2email-option-for-disabling-certificate-verification
 
+def needshack(): return sys.version_info >= ver
+
 def noverify():
-  if sys.version_info < ver: return
   ssl._create_default_https_context = ssl._create_unverified_context
