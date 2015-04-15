@@ -1,7 +1,6 @@
 # chris 032515 Package-relative entry point.  Loaded by __main__.
 
 import os.path
-import sys
 
 from ConfigParser import ConfigParser
 from argparse import ArgumentParser
@@ -65,5 +64,3 @@ class Main(object):
       self.error('caught interrupt')
       return 1
     return 0
-
-sys.exit(Main(*sys.argv).run())

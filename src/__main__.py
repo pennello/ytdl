@@ -1,5 +1,6 @@
 # chris 041315 Main entry point.
 
-import runpy
+import sys
+from ytdl.main import Main
 
-runpy.run_module('ytdl.main')
+sys.exit(Main(*sys.argv).run())
