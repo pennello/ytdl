@@ -6,8 +6,7 @@ from ConfigParser import ConfigParser
 from argparse import ArgumentParser
 from collections import OrderedDict
 
-from . import client,groups,util
-from .ssl import noverify
+from . import client,groups,ssl,util
 from .subs import Db
 
 class Main(object):
@@ -51,7 +50,7 @@ class Main(object):
   def error(self,x): util.log('error: %s' % x)
 
   def run(self):
-    noverify()
+    if ssl.needshack(): ssl.noverify()
     group = self.groups[self.args.group]
     if self.args.command == 'import':
       self.args.command = 'import_' # Hacky, hacky.
