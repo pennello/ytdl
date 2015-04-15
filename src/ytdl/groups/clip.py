@@ -27,7 +27,9 @@ class Clip(Group):
     clip = cmdgrp.add_parser('clip',description=descr,help=descr)
     clip_commands = clip.add_subparsers(dest='command',metavar='command')
     descr = ('Listen for YouTube URLs, launch youtube-dl (roughly) on-demand, '
-      'and download videos to current working directory.')
+      'and download videos to current working directory.  If available, will '
+      'trigger OS graphical notifications when new URLs are found and when '
+      'youtube-dl is invoked.')
     listen = clip_commands.add_parser('listen',description=descr,help=descr)
 
   def reset(self):
