@@ -32,6 +32,12 @@ The key should be an application server key, created on the [Google
 developers console][2].  It will be used when making calls to the
 YouTube Data API (v3).
 
+Dependencies
+------------
+`ytdl` makes use of the excellent program [`youtube-dl`][3] to do the
+actual heavy lifting of downloading YouTube videos.  It's launched as a
+subprocess, so it needs to be in your path.
+
 Installation
 ------------
 Simply run `make && sudo make install`.  The `Makefile` takes advantage
@@ -65,3 +71,4 @@ References
 ----------
 [1]: http://youtube-eng.blogspot.com/2015/03/dude-are-you-still-on-youtube-api-v2.html
 [2]: https://console.developers.google.com/
+[3]: http://rg3.github.io/youtube-dl/
