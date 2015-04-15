@@ -11,8 +11,8 @@ from .ssl import noverify
 from .subs import Db
 
 class Main(object):
-  def __init__(self,fullprog,*argv):
-    self.prog = os.path.basename(fullprog)
+  def __init__(self,prog,*argv):
+    self.prog = os.path.basename(prog)
     self.conf = self.makeconf()
     self.db = Db(self)
     self.db.init()
