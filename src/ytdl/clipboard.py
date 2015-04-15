@@ -1,4 +1,4 @@
-# chris 030415 cross-platform pasteboard access
+# chris 030415 Cross-platform pasteboard access.
 
 # TODO Windows support.
 

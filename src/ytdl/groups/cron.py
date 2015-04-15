@@ -26,7 +26,7 @@ class Cron(Group):
 
   def subs(self): return self.main.groups['subs']
 
-  # Sort of like:
+  # This method is sort of like the following.
   # ytdl subs latest [-s] | xargs youtube-dl --no-progress --
   def dlsubs(self,args):
     os.chdir(args.outdir)

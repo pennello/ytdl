@@ -8,9 +8,9 @@ except ImportError: clipboard = None
 from .bases import Group,Error
 
 class Clip(Group):
-  # in seconds
-  thresh = 10 # to start youtube-dl
-  period = .2 # polling pasteboard
+  # These are in seconds.
+  thresh = 10 # Minimum time after which to start youtube-dl.
+  period = .2 # Period with which to poll clipboard.
 
   patterns = (
     'youtu.be/',
@@ -29,8 +29,8 @@ class Clip(Group):
     listen = clip_commands.add_parser('listen',description=descr,help=descr)
 
   def reset(self):
-    self.data = () # will store content from the pasteboard
-    self.stamp = None # most recent data addition
+    self.data = ()    # Will store content from the clipboard.
+    self.stamp = None # Time of the most recent data addition.
 
   def popen(self, wait):
     args = youtubedl.args(self.data)
@@ -68,5 +68,5 @@ class Clip(Group):
         self.poll()
         self.sleep()
     except KeyboardInterrupt:
-      self.out() # line break after ^C on-screen
+      self.out() # Make line break after ^C on-screen.
       if self.data: self.popen(True)

@@ -9,10 +9,10 @@ class NotFound(Error): pass
 class AlreadyExists(Error): pass
 
 class Sub(object):
-  types = () # populated below, transformed into dict
+  types = () # This is populated below, and transformed into a dict.
 
-  # subclasses are expected to define lsmax: the number of seen videos
-  # to list
+  # Subclasses are expected to define lsmax: the number of seen videos
+  # to list.
 
   @classmethod
   def type(cls): return cls.__name__.lower()
@@ -49,7 +49,6 @@ class Channel(Sub):
       else:
         if vid in self.seen: break
         yield vid
-        #self.log('new video %s' % vid)
         newseen.append(vid)
       if newseen:
         self.seen = newseen if self.seen is None else newseen + self.seen
@@ -89,7 +88,7 @@ class Db(object):
   def allkeys(self):
     for type in Sub.types.iterkeys():
       for id in os.listdir(self.typetopath(type)):
-        # ignore junk
+        # Ignore junk.
         if id.startswith('.') and 'DS_Store' in id: continue
         yield type,id
 

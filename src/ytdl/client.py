@@ -86,7 +86,7 @@ class Client(object):
       return item['contentDetails']['videoId']
     for x in self.pcall('playlistItems',params,itemfn): yield x
 
-  # type: 'channel' or 'playlist'
+  # type: 'channel' or 'playlist'.
   def isvalid(self,(type,id)):
     params = dict(part='id',id=id)
     return bool(self.call(type + 's',params)['pageInfo']['totalResults'])
