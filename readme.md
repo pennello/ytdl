@@ -42,6 +42,13 @@ Running
 -------
 Run `ytdl`.
 
+Documentation
+-------------
+`ytdl` has a number of commands.  In fact, the commands themselves are
+subdivided into command groups, wich commands underneath each group.
+All levels of invocation are well-documented with support for a `--help`
+option.  Run `ytdl --help` to get started.
+
 Files
 -----
  - `/usr/local/bin/ytdl` (via `make install`)
@@ -51,7 +58,6 @@ Files
 
 Future Work
 -----------
-- Write man page.
 - Write extensive Pydoc documentation.
 - Don't require config for `clip listen`.
 

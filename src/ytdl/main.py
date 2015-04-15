@@ -42,7 +42,7 @@ class Main(object):
     descr = 'YouTube download manager.'
     parser = ArgumentParser(self.prog,description=descr)
     parser.add_argument('-v','--verbose',action='store_true',default=False,
-      help='enable verbose logging; defaults to %(default)s')
+      help='enable verbose logging to standard error')
     cmdgrp = parser.add_subparsers(dest='group',metavar='command_group')
     for group in self.groups.itervalues(): group.parse(cmdgrp)
     return parser.parse_args(argv)

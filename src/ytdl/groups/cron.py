@@ -27,12 +27,12 @@ class Cron(Group):
   def subs(self): return self.main.groups['subs']
 
   # Sort of like:
-  # ytdl subs latest [-s] | xargs youtube-dl --no-progress
+  # ytdl subs latest [-s] | xargs youtube-dl --no-progress --
   def dlsubs(self,args):
+    os.chdir(args.outdir)
     vids = tuple(self.subs().latesti(args.save))
     if not vids: return
     self.log('got video ids:\n%s' % '\n'.join(vids))
-    os.chdir(args.outdir)
     args = youtubedl.args(('--no-progress','--') + vids)
     with self.logfile(self.logname('dlsubs')) as logfile:
       subprocess.check_call(args,stdout=logfile)

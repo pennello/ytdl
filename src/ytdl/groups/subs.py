@@ -14,7 +14,8 @@ class Subs(Group):
     subs = cmdgrp.add_parser('subs',description=descr,help=descr)
     subs_commands = subs.add_subparsers(dest='command',metavar='command')
 
-    descr = 'Import subscriptions from YouTube. Overwrites local DB.'
+    descr = ('Import subscriptions from YouTube. '
+      'Adds to, but does not overwrite local DB.')
     import_ = subs_commands.add_parser('import',description=descr,help=descr)
     import_.add_argument('channelid',help='channel id of user whose '
       'subscriptions to import')
@@ -22,7 +23,8 @@ class Subs(Group):
     descr = ('List subscriptions. Optionally, list all seen video IDs for a '
      'given subscription.')
     ls = subs_commands.add_parser('ls',description=descr,help=descr)
-    ls.add_argument('type',nargs='?',help='subscription type')
+    ls.add_argument('type',nargs='?',choices=Sub.types.keys(),
+      help='subscription type')
     ls.add_argument('id',nargs='?',help='subscription id')
 
     descr = 'Add subscription. Performs validation.'

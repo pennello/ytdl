@@ -24,7 +24,8 @@ class Clip(Group):
     descr = 'Clipboard functionality. Not available on all platforms.'
     clip = cmdgrp.add_parser('clip',description=descr,help=descr)
     clip_commands = clip.add_subparsers(dest='command',metavar='command')
-    descr = 'Listen for YouTube URLs, launch youtube-dl (roughly) on-demand.'
+    descr = ('Listen for YouTube URLs, launch youtube-dl (roughly) on-demand, '
+      'and download videos to current working directory.')
     listen = clip_commands.add_parser('listen',description=descr,help=descr)
 
   def reset(self):
@@ -58,7 +59,8 @@ class Clip(Group):
   # Launch youtube-dl soon after last paste, but not so soon as to
   # preclude batching a group of pastes into a single youtube-dl call.
   def listen(self,args):
-    if clipboard is None: raise Error(1,'clipboard unavailable')
+    if clipboard is None:
+      raise Error(1,'clipboard unavailable on this platform')
     self.reset()
     self.last = clipboard.paste()
     try:
