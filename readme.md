@@ -11,7 +11,7 @@ content returned in your home feed.
 `ytdl` replaces your YouTube subscription management.  You no longer
 manage your YouTube channel subscriptions on youtube.com, and instead
 manage them through this tool.  In addition, you can manage playlist
-subscriptions as well.
+subscriptions directly in the same manner as channel subscriptions.
 
 `ytdl` supports two main use cases.
 
@@ -36,17 +36,13 @@ Dependencies
 ------------
 `ytdl` makes use of the excellent program [`youtube-dl`][3] to do the
 actual heavy lifting of downloading YouTube videos.  It's launched as a
-subprocess, so it needs to be in your path.
+subprocess, and needs to be in your path.
 
 Installation
 ------------
 Simply run `make && sudo make install`.  The `Makefile` takes advantage
 of GNU extensions; therefore, you will want to use `gmake` on FreeBSD.
 The `Makefile` supports `DESTDIR`.
-
-Running
--------
-Run `ytdl`.
 
 Documentation
 -------------
@@ -67,8 +63,6 @@ Future Work
 - Write extensive Pydoc documentation.
 - Don't require config for `clip listen`.
 
-References
-----------
 [1]: http://youtube-eng.blogspot.com/2015/03/dude-are-you-still-on-youtube-api-v2.html
 [2]: https://console.developers.google.com/
 [3]: http://rg3.github.io/youtube-dl/
