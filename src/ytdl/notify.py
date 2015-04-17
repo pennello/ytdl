@@ -1,10 +1,13 @@
-# chris 041515 Cross-platform notification support.
+# chris 041515 
+
+'''Cross-platform notification support.'''
 
 import json
 
 __all__ = 'notify',
 
 class Impl(object):
+  '''Base class for notification implementations.'''
   # Make subtitle optional if needed.
   def notify(self,title,subtitle,message): raise NotImplementedError()
 clss = ()
@@ -32,6 +35,7 @@ else:
   raise ImportError('no implementation available')
 
 notify = impl.notify
+'''Notify user.'''
 
 if __name__ == '__main__':
   from argparse import ArgumentParser

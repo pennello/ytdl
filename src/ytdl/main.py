@@ -1,4 +1,11 @@
-# chris 032515 Package-relative entry point.  Loaded by __main__.
+# chris 032515
+
+'''
+Package-relative entry point.
+
+An instance of Main is constructed by __main__ (in the parent
+directory), and its run method is invoked.
+'''
 
 import os.path
 
@@ -10,6 +17,17 @@ from . import client,groups,ssl,util
 from .subs import Db
 
 class Main(object):
+  '''
+  A single instance of the Main class serves as a context for the
+  application.  When constructed, it loads the configuration, constructs
+  and initializes an instance of the subscription database interface,
+  constructs the command group interfaces, kicks off the command-line
+  parsing, and constructs an instance of the YouTube API client.
+
+  Its run method locates and runs the command specified on the
+  command-line.
+  '''
+
   def __init__(self,prog,*argv):
     self.prog = os.path.basename(prog)
     self.conf = self.makeconf()
@@ -24,19 +42,42 @@ class Main(object):
     self.args = self.parse(argv)
     self.client = client.Client(self.key())
 
-  def basepath(self): return os.path.expanduser('~')
-  def path(self,*path): return os.path.join(self.basepath(),*path)
-  def dbpath(self,*path): return self.path('var','db',self.prog,*path)
-  def logpath(self,*path): return self.path('var','log',self.prog,*path)
+  def basepath(self):
+    '''
+    Base path used by all other runtime paths.  Uses user's home
+    directory.
+    '''
+    return os.path.expanduser('~')
+  def path(self,*path):
+    '''Return path joined with base path.'''
+    return os.path.join(self.basepath(),*path)
+  def dbpath(self,*path):
+    '''Return path joined with namespaced db path.'''
+    return self.path('var','db',self.prog,*path)
+  def logpath(self,*path):
+    '''Return path joined with namespaced log path.'''
+    return self.path('var','log',self.prog,*path)
 
-  def confpath(self): return self.path('etc','%s.conf' % self.prog)
+  def confpath(self):
+    '''Return config path.'''
+    return self.path('etc','%s.conf' % self.prog)
   def makeconf(self):
+    '''
+    Make and return ConfigParser instance with parsed configuration
+    information from the config file.
+    '''
     conf = ConfigParser()
     with open(self.confpath(),'rb') as f: conf.readfp(f)
     return conf
-  def key(self): return self.conf.get('auth','key')
+  def key(self):
+    '''Return auth key from config.'''
+    return self.conf.get('auth','key')
 
   def parse(self,argv):
+    '''
+    Parse command-line arguments.  Relies on command groups to add their
+    own commands to the main command group subparser.
+    '''
     descr = 'YouTube download manager.'
     parser = ArgumentParser(self.prog,description=descr)
     parser.add_argument('-v','--verbose',action='store_true',default=False,
@@ -46,10 +87,14 @@ class Main(object):
     return parser.parse_args(argv)
 
   def log(self,x):
+    '''Log object to standard error if verbose mode is enabled.'''
     if self.args.verbose: util.log(x)
-  def error(self,x): util.log('error: %s' % x)
+  def error(self,x):
+    '''Log object to standard error with error prefix.'''
+    util.log('error: %s' % x)
 
   def run(self):
+    '''Locate and runs the command specified on the command-line.'''
     if ssl.needshack(): ssl.noverify()
     group = self.groups[self.args.group]
     if self.args.command == 'import':

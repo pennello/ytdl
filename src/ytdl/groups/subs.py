@@ -1,5 +1,7 @@
 # chris 032615
 
+'''Subscription command group.'''
+
 from ..subs import Sub,NotFound,AlreadyExists
 from .bases import Group,Error
 
@@ -46,6 +48,10 @@ class Subs(Group):
       help='save latest video ids; defaults to %(default)s')
 
   def import_(self,args):
+    '''
+    Funny name for this command due to import being a language-reserved
+    keyword.  See the Main.run implementation.
+    '''
     if not self.client().isvalid(('channel',args.channelid)):
       raise Error(1,self.errinval)
     for chid in self.client().subs(args.channelid):
@@ -77,6 +83,7 @@ class Subs(Group):
     for vid in self.latesti(args.save): self.out(vid)
 
   def latesti(self,save):
+    '''Internal implementation of latest command.  Yields video IDs.'''
     for sub in self.db().loadall():
       self.log(sub)
       for vid in sub.latest():

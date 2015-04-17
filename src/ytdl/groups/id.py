@@ -1,5 +1,7 @@
 # chris 032615
 
+'''Identity command group.'''
+
 from .. import client
 from .bases import Group,Error
 

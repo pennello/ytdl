@@ -51,6 +51,8 @@ subdivided into command groups, wich commands underneath each group.
 All levels of invocation are well-documented with support for a `--help`
 option.  Run `ytdl --help` to get started.
 
+In addition, most of the classes and methods have Pydoc documentation.
+
 Files
 -----
  - `/usr/local/bin/ytdl` (via `make install`)
@@ -60,7 +62,6 @@ Files
 
 Future Work
 -----------
-- Write extensive Pydoc documentation.
 - Don't require config for `clip listen`.
 
 [1]: http://youtube-eng.blogspot.com/2015/03/dude-are-you-still-on-youtube-api-v2.html

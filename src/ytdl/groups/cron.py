@@ -1,12 +1,16 @@
 # chris 040115
 
+'''Cron command group.'''
+
 import os
 import subprocess
 from .. import youtubedl
 from .bases import Group
 
 class Cron(Group):
-  def logname(self,name): return 'cron_%s.log' % name
+  def logname(self,name):
+    '''"cron"-prefixed log name.'''
+    return 'cron_%s.log' % name
 
   def parse(self,cmdgrp):
     descr = 'Cron jobs.'
@@ -24,7 +28,11 @@ class Cron(Group):
     dlsubs.add_argument('-s','--save',action='store_true',default=False,
       help="same as '-s' option for 'subs latest'")
 
-  def subs(self): return self.main.groups['subs']
+  def subs(self):
+    '''
+    Return reference to subscription command group from Main instance.
+    '''
+    return self.main.groups['subs']
 
   # This method is sort of like the following.
   # ytdl subs latest [-s] | xargs youtube-dl --no-progress --

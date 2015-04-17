@@ -1,6 +1,9 @@
 # chris 032615
 
-# Convenience imports for external users.
+'''Provides convenience imports for external users.'''
+
+__all__ = 'Error','Id','Subs','Clip','Cron'
+
 from .bases import Error
 from .id import Id
 from .subs import Subs
