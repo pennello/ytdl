@@ -5,16 +5,8 @@
 import os.path
 from contextlib import contextmanager
 from .. import util
-
-class Error(Exception):
-  '''
-  Error class for commands to raise.  The Main instance will catch this
-  error, output the message to standard error, and exit the process with
-  the specified exit code.
-  '''
-  def __init__(self,code,msg):
-    super(Error,self).__init__(code,msg)
-    self.code,self.msg = code,msg
+# Convenience import for command groups.
+from ..error import Error
 
 class Group(object):
   '''
@@ -37,7 +29,7 @@ class Group(object):
     raise NotImplementedError()
   def client(self):
     '''Return client instance form Main instance.'''
-    return self.main.client
+    return self.main.client()
   def log(self,*a):
     '''Call log method on Main instance.'''
     self.main.log(*a)

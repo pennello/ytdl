@@ -7,6 +7,7 @@ An instance of Main is constructed by __main__ (in the parent
 directory), and its run method is invoked.
 '''
 
+import errno
 import os.path
 
 from ConfigParser import ConfigParser
@@ -14,6 +15,7 @@ from argparse import ArgumentParser
 from collections import OrderedDict
 
 from . import client,groups,ssl,util
+from .error import Error
 from .subs import Db
 
 class Main(object):
@@ -40,7 +42,6 @@ class Main(object):
       cron=groups.Cron(self),
     )
     self.args = self.parse(argv)
-    self.client = client.Client(self.key())
 
   def basepath(self):
     '''
@@ -64,14 +65,29 @@ class Main(object):
   def makeconf(self):
     '''
     Make and return ConfigParser instance with parsed configuration
-    information from the config file.
+    information from the config file.  Return None if no config found.
     '''
     conf = ConfigParser()
-    with open(self.confpath(),'rb') as f: conf.readfp(f)
+    try:
+      with open(self.confpath(),'rb') as f:
+        conf.readfp(f)
+    except IOError,e:
+      if e.errno != errno.ENOENT: raise
+      return None
     return conf
   def key(self):
-    '''Return auth key from config.'''
+    '''Return auth key from config.  Return None if no config.'''
+    if self.conf is None: return None
     return self.conf.get('auth','key')
+
+  def client(self):
+    '''
+    Dynamically construct client instance from auth key.  Error if no
+    key available.
+    '''
+    key = self.key()
+    if key is None: raise Error(3,'no api key (set up conf first)')
+    return client.Client(key)
 
   def parse(self,argv):
     '''
@@ -101,7 +117,7 @@ class Main(object):
       self.args.command = 'import_' # Hacky, hacky.
     command = getattr(group,self.args.command)
     try: command(self.args)
-    except groups.Error,e:
+    except Error,e:
       self.error(e.msg)
       return e.code
     except KeyboardInterrupt:

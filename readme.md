@@ -60,10 +60,6 @@ Files
  - `$HOME/var/db/ytdl/*` (created at runtime)
  - `$HOME/var/log/ytdl/cron_dlsubs.log` (created by `cron dlsubs`)
 
-Future Work
------------
-- Don't require config for `clip listen`.
-
 [1]: http://youtube-eng.blogspot.com/2015/03/dude-are-you-still-on-youtube-api-v2.html
 [2]: https://console.developers.google.com/
 [3]: http://rg3.github.io/youtube-dl/
