@@ -10,5 +10,5 @@ def args(a):
   common arguments.
   '''
   r = 'youtube-dl','-i'
-  if needshack(): r += '--no-check-certificates',
+  if needshack(): r += '--no-check-certificate',
   return r + a
