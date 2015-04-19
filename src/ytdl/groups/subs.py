@@ -22,30 +22,36 @@ class Subs(Group):
     import_.add_argument('channelid',help='channel id of user whose '
       'subscriptions to import')
 
+    # Add subscription argument to parser.  opt is whether it's
+    # optional.
+    def addsub(p,opt):
+      nargs = '?' if opt else None
+      p.add_argument('type',nargs=nargs,choices=Sub.types.keys(),
+        help='subscription type')
+      p.add_argument('id',nargs=nargs,help='subscription id')
+
     descr = ('List subscriptions. Optionally, list all seen video IDs for a '
      'given subscription.')
     ls = subs_commands.add_parser('ls',description=descr,help=descr)
-    ls.add_argument('type',nargs='?',choices=Sub.types.keys(),
-      help='subscription type')
-    ls.add_argument('id',nargs='?',help='subscription id')
+    addsub(ls,True)
 
     descr = 'Add subscription. Performs validation.'
     add = subs_commands.add_parser('add',description=descr,help=descr)
-    add.add_argument('type',choices=Sub.types.keys(),help='subscription type')
-    add.add_argument('id',help='subscription id')
+    addsub(add,False)
 
     descr = 'Remove subscription.'
     rm = subs_commands.add_parser('rm',description=descr,help=descr)
-    rm.add_argument('type',choices=Sub.types.keys(),help='subscription type')
-    rm.add_argument('id',help='subscription id')
+    addsub(rm,False)
 
     descr=('Fetch and print video IDs of latest uploads from subscriptions. '
       'Uses seen state to avoid re-printing video IDs of uploads already '
       'seen. Combined with the -s option, makes for ideal periodic input to '
-      "youtube-dl. See 'cron dlsubs'.")
+      "youtube-dl. See 'cron dlsubs'.  Optionally, perform logic for just one "
+      'subscription.')
     latest = subs_commands.add_parser('latest',description=descr,help=descr)
     latest.add_argument('-s','--save',action='store_true',default=False,
       help='save latest video ids; defaults to %(default)s')
+    addsub(latest,True)
 
   def import_(self,args):
     '''
@@ -60,8 +66,9 @@ class Subs(Group):
   def ls(self,args):
     if args.type and args.id:
       sub = self.db().load((args.type,args.id))
-      for vid in sub.seen:
-        self.out(vid)
+      if sub.seen is not None:
+        for vid in sub.seen:
+          self.out(vid)
     else:
       for sub in self.db().loadall(): self.out(sub)
 
@@ -80,13 +87,25 @@ class Subs(Group):
       raise Error(1,'channel id not found')
 
   def latest(self,args):
-    for vid in self.latesti(args.save): self.out(vid)
+    key = (args.type,args.id) if args.type and args.id else None
+    for vid in self.latesti(args.save,key): self.out(vid)
 
-  def latesti(self,save):
-    '''Internal implementation of latest command.  Yields video IDs.'''
-    for sub in self.db().loadall():
+  def latesti(self,save,key):
+    '''
+    Internal implementation of latest command.  save is a boolean that
+    indicates whether to save newly-seen video IDs.  If key is not None,
+    will yield video IDs of just the subscription designated by key.
+    Otherwise, will yield latest video IDs for all subscriptions.
+    '''
+    def impl(sub):
       self.log(sub)
       for vid in sub.latest():
         self.log('new video %s' % vid)
         yield vid
       if save: self.db().save(sub)
+
+    if key is not None:
+      for vid in impl(self.db().load(key)): yield vid
+    else:
+      for sub in self.db().loadall():
+        for vid in impl(sub): yield vid

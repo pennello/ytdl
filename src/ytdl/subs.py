@@ -84,9 +84,9 @@ class Channel(Sub):
         if vid in self.seen: break
         yield vid
         newseen.append(vid)
-      if newseen:
-        self.seen = newseen if self.seen is None else newseen + self.seen
-        self.seen = self.seen[:self.seenmax]
+    if newseen:
+      self.seen = newseen if self.seen is None else newseen + self.seen
+      self.seen = self.seen[:self.seenmax]
 Sub.types += Channel,
 
 class Playlist(Sub):
@@ -152,7 +152,7 @@ class Db(object):
     data = data.strip()
     if data: data = data.split('\n')
     else: data = None
-    return Sub.types[key[0]](self.main.client,key[1],data)
+    return Sub.types[key[0]](self.main.client(),key[1],data)
 
   def loadall(self):
     '''

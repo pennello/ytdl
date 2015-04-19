@@ -38,7 +38,7 @@ class Cron(Group):
   # ytdl subs latest [-s] | xargs youtube-dl --no-progress --
   def dlsubs(self,args):
     os.chdir(args.outdir)
-    vids = tuple(self.subs().latesti(args.save))
+    vids = tuple(self.subs().latesti(args.save,None))
     if not vids: return
     self.log('got video ids:\n%s' % '\n'.join(vids))
     args = youtubedl.args(('--no-progress','--') + vids)
