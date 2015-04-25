@@ -43,8 +43,9 @@ def copy(x):
   impl.copy(x)
 
 def paste():
-  '''Return contents of clipboard.'''
+  '''Return contents of clipboard; return None if empty.'''
   r = impl.paste()
+  if r is None: return None
   if not isinstance(r, unicode):
     raise Exception('got non-unicode %r from implementation' % r)
   return r
