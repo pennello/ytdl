@@ -20,7 +20,7 @@ subscriptions directly in the same manner as channel subscriptions.
 
 Dependencies
 ------------
-`ytdl` makes use of the excellent program [`youtube-dl`][3] to do the
+`ytdl` makes use of the excellent program [`youtube-dl`][2] to do the
 actual heavy lifting of downloading YouTube videos.  It's launched as a
 subprocess, and needs to be in your path.
 
@@ -42,7 +42,7 @@ something like the following.
     key = AIzaSyAujM2qD38VDMpfQHXQv3XjJx-Mjzb5Xs4
 
 The key should be an application server key, created on the [Google
-developers console][2].  It will be used when making calls to the
+developers console][3].  It will be used when making calls to the
 YouTube Data API (v3).
 
 Next, import your current YouTube subscriptions.  First, if you don't
@@ -90,5 +90,5 @@ Files
  - `$HOME/var/log/ytdl/cron_dlsubs.log` (created by `cron dlsubs`)
 
 [1]: http://youtube-eng.blogspot.com/2015/03/dude-are-you-still-on-youtube-api-v2.html
-[2]: https://console.developers.google.com/
-[3]: http://rg3.github.io/youtube-dl/
+[2]: http://rg3.github.io/youtube-dl/
+[3]: https://console.developers.google.com/
