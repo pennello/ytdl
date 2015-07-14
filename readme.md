@@ -29,8 +29,8 @@ The `Makefile` supports `DESTDIR`.
 
 Latest Subscription Download
 ----------------------------
-The first use case is to download the most-recent unseen uploads to a
-specified directory.  Ideal for `cron`.
+`ytdl` downloads the most-recent unseen video subscription uploads to a
+specified directory.  This is ideal for `cron`.
 
 Place a file `ytdl.conf` in `$HOME/etc`.  Its contents should look
 something like the following.
