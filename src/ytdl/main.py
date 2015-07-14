@@ -38,7 +38,6 @@ class Main(object):
     self.groups = OrderedDict(
       id  =groups.Id(self),
       subs=groups.Subs(self),
-      clip=groups.Clip(self),
       cron=groups.Cron(self),
     )
     self.args = self.parse(argv)

@@ -13,10 +13,7 @@ manage your YouTube channel subscriptions on youtube.com, and instead
 manage them through this tool.  In addition, you can manage playlist
 subscriptions directly in the same manner as channel subscriptions.
 
-`ytdl` supports two main use cases.
-
-1. Download your latest subscriptions.
-2. Wach the clipboard for YouTube URLs, and download them automatically.
+In general, `ytdl` enables you to download your latest subscriptions.
 
 Dependencies
 ------------
@@ -64,14 +61,6 @@ Note that in the first run through, `ytdl` will not actually download
 anything.  Instead, it will store the most-recent video IDs in each
 channel.  Future invocations will continue to update this "seen state",
 so `ytdl` won't download the same videos multiple times.
-
-Clipboard Listening
--------------------
-The second use case is to watch the clipboard for YouTube video URLs,
-and automatically download them to the current working directory.  No
-API key required; simply run the following.
-
-    ytdl clip listen
 
 Documentation
 -------------
