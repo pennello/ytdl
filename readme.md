@@ -85,7 +85,7 @@ available.
 
 If the environment variable `XDG_DATA_DIR` is set to
 `$HOME/foo/bar/share`, for example, then the local DB and logs will be
-stored in `$HOME/foo/bar/var/db/...` and `$HOEM/foo/bar/var/log/...`
+stored in `$HOME/foo/bar/var/db/...` and `$HOME/foo/bar/var/log/...`
 instead of directly under the home directory.
 
 [1]: http://youtube-eng.blogspot.com/2015/03/dude-are-you-still-on-youtube-api-v2.html
