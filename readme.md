@@ -78,6 +78,16 @@ Files
  - `$HOME/var/db/ytdl/*` (created at runtime)
  - `$HOME/var/log/ytdl/cron_dlsubs.log` (created by `cron dlsubs`)
 
+XDG Compatibility
+-----------------
+`ytdl.conf` will be pulled from the XDG config home instead, if
+available.
+
+If the environment variable `XDG_DATA_DIR` is set to
+`$HOME/foo/bar/share`, for example, then the local DB and logs will be
+stored in `$HOME/foo/bar/var/db/...` and `$HOEM/foo/bar/var/log/...`
+instead of directly under the home directory.
+
 [1]: http://youtube-eng.blogspot.com/2015/03/dude-are-you-still-on-youtube-api-v2.html
 [2]: http://rg3.github.io/youtube-dl/
 [3]: https://console.developers.google.com/
