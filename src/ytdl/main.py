@@ -14,6 +14,8 @@ from ConfigParser import ConfigParser
 from argparse import ArgumentParser
 from collections import OrderedDict
 
+from userdirs import UserDirs
+
 from . import client,groups,ssl,util
 from .error import Error
 from .subs import Db
@@ -31,6 +33,7 @@ class Main(object):
   '''
 
   def __init__(self,prog,*argv):
+    self.userdirs = UserDirs()
     self.prog = os.path.basename(prog)
     self.conf = self.makeconf()
     self.db = Db(self)
@@ -42,15 +45,9 @@ class Main(object):
     )
     self.args = self.parse(argv)
 
-  def basepath(self):
-    '''
-    Base path used by all other runtime paths.  Uses user's home
-    directory.
-    '''
-    return os.path.expanduser('~')
   def path(self,*path):
-    '''Return path joined with base path.'''
-    return os.path.join(self.basepath(),*path)
+    '''Return path as determined by UserDirs library.'''
+    return self.userdirs.dir(*path)
   def dbpath(self,*path):
     '''Return path joined with namespaced db path.'''
     return self.path('var','db',self.prog,*path)
