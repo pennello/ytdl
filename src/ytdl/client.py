@@ -5,9 +5,9 @@
 # TODO Use `yield from` when available (Python 3?).
 
 import json
+import urllib2
 from contextlib import closing
 from urllib import urlencode
-from urllib2 import urlopen
 from . import util
 
 class Error(Exception):
@@ -34,7 +34,13 @@ class Client(object):
     params = params.copy()
     params['key'] = self.key
     url = '%s/%s?%s' % (self.apibase,path,urlencode(params))
-    with closing(urlopen(url)) as u: return json.load(u)
+    try:
+      with closing(urllib2.urlopen(url)) as u:
+        return json.load(u)
+    except urllib2.HTTPError,e:
+      try: util.log('client call http error; body: %r' % e.read())
+      except Exception: pass
+      raise
 
   def pcall(self,path,params,itemfn):
     '''Utility function for making paginated calls.'''
