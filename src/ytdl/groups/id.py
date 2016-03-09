@@ -11,11 +11,20 @@ class Id(Group):
     id = cmdgrp.add_parser('id',description=descr,help=descr)
     id_commands = id.add_subparsers(dest='command',metavar='command')
     descr = 'Get user channel ID.'
-    get = id_commands.add_parser('get',description=descr,help=descr)
-    get.add_argument('username', help='username of user whose channel id to '
+    getuser = id_commands.add_parser('getuser',description=descr,help=descr)
+    getuser.add_argument('name', help='username of user itse channel id to '
+      'get')
+    descr = 'Get video channel ID.'
+    getvideo = id_commands.add_parser('getvideo',description=descr,help=descr)
+    getvideo.add_argument('id', help='video id of video itse channel id to '
       'get')
 
-  def get(self,args):
-    try: chid = self.client().userchannelid(args.username)
+  def getuser(self,args):
+    try: chid = self.client().userchannelid(args.name)
     except client.NotFound: raise Error(127,'user not found')
+    self.out(chid)
+
+  def getvideo(self,args):
+    try: chid = self.client().videochannelid(args.id)
+    except client.NotFound: raise Error(127,'video not found')
     self.out(chid)
