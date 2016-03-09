@@ -63,6 +63,13 @@ class Client(object):
     if not items: raise NotFound()
     return items[0]['id']
 
+  def videochannelid(self,videoid):
+    '''Return channel ID of video with the given ID.'''
+    params = dict(part='id,snippet',id=videoid)
+    items = self.call('videos',params)['items']
+    if not items: raise NotFound()
+    return items[0]['snippet']['channelId']
+
   def subs(self,channelid):
     '''
     Yield channel IDs of channels to whom the channel with the given
