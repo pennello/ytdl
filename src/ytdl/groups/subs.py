@@ -55,12 +55,17 @@ class Subs(Group):
       help='save latest video ids; defaults to %(default)s')
     addsub(latest,True)
 
+    descr = ('Perform validation on all subscriptions. If all is well, '
+      'nothing is printed and the exit code is 0. Otherwise, all invalid '
+      'subscriptions are printed to standard out and the exit code is 1.')
+    validate = subs_commands.add_parser('validate',description=descr,help=descr)
+
   def import_(self,args):
     '''
     Funny name for this command due to import being a language-reserved
     keyword.  See the Main.run implementation.
     '''
-    if not self.client().isvalid(('channel',args.channelid)):
+    if not self.client().isvalidsingle(('channel',args.channelid)):
       raise Error(1,self.errinval)
     for chid in self.client().subs(args.channelid):
       self.db().add(('channel',chid))
@@ -86,7 +91,7 @@ class Subs(Group):
 
   def add(self,args):
     key = args.type,args.id
-    if not self.client().isvalid(key):
+    if not self.client().isvalidsingle(key):
       raise Error(1,self.errinval)
     try: self.db().add(key)
     except AlreadyExists:
@@ -121,3 +126,13 @@ class Subs(Group):
     else:
       for sub in self.db().loadall():
         for vid in impl(sub): yield vid
+
+  def validate(self,args):
+    subs = list(self.db().loadall()) # loadall returns an iterator.
+    Sub.validate(self.client(),subs)
+    ret = 0
+    for sub in subs:
+      if not sub.valid:
+        self.out(sub.idview())
+        ret = 1
+    return ret
