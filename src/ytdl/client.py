@@ -80,19 +80,32 @@ class Client(object):
       return item['snippet']['resourceId']['channelId']
     for x in self.pcall('subscriptions',params,itemfn): yield x
 
-  def titles(self,type,ids):
+  def titles(self,type,ids,safe=False):
     '''
-    Yield titles for channels or playlists indicated by channel or
-    playlist IDs.  type: 'channel' or 'playlist'.  Performs batched
-    calls.
+    Yield titles for channels, playlists, or videos, indicated by
+    channel, playlist, or video IDs.  type: 'channel', 'playlist', or
+    'video'.  Performs batched calls.
+
+    safe: whether to throw an exception or not if an entity is not
+    found.
     '''
+    # The YouTube API gives us back items potentially out-of-order from
+    # what we requested, so we have to rectify the ordering ourselves.
     def call(ids):
       params = dict(part='snippet',id=','.join(ids))
       def itemfn(item):
-        return item['snippet']['title']
+        return item['id'],item['snippet']['title']
       for x in self.pcall(type + 's',params,itemfn): yield x
     for seg in util.segment(ids,self.batchsize):
-      for x in call(seg): yield x
+      titles = {id:title for id,title in call(seg)}
+      for id in seg:
+        if id in titles: yield titles[id]
+        else:
+          if safe:
+            msg = ('--(title error) entity %s %s '
+              'not found in API call--') % (type,id)
+            yield msg
+          else: raise NotFound(type,id)
 
   def uploads(self,channelid):
     '''
