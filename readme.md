@@ -65,7 +65,7 @@ so `ytdl` won't download the same videos multiple times.
 Documentation
 -------------
 `ytdl` has a number of commands.  In fact, the commands themselves are
-subdivided into command groups, wich commands underneath each group.
+subdivided into command groups, with commands underneath each group.
 All levels of invocation are well-documented with support for a `--help`
 option.  Run `ytdl --help` to get started.
 
