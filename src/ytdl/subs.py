@@ -24,10 +24,11 @@ class Sub(object):
   Subclasses are expected to define lsmax: the number of seen videos to
   list.
 
-  A subscription-individual method for getting a title is not provided
-  due to the common case of wanting to fetch in bulk, and not
-  one-by-one.  However, there is a bulk titles class method which
-  populates the title attribute on given subscription objects.
+  Subscription-individual methods for getting the title or whether or
+  not a subscription is valid are not provided due to the common case of
+  wanting to fetch in bulk, and not one-by-one.  However, there is a
+  bulk titles and isvalid class method which populate the title and
+  valid attribute on given subscription objects.
   '''
 
   types = () # This is populated below, and transformed into a dict.
@@ -78,6 +79,19 @@ class Sub(object):
     Note that a client is required since this is a class method.
     '''
     cls._popattr(client,subs,'titles','title')
+
+  @classmethod
+  def validate(cls,client,subs):
+    '''
+    Populate the valid attribute on given subscription objects.
+
+    If a subscription object already has a valid attribute, this is
+    ignored.  This may be updated in the future to avoid superfluous
+    API calls.
+
+    Note that a client is required since this is a class method.
+    '''
+    cls._popattr(client,subs,'isvalid','valid')
 
   def __init__(self,client,id,seen):
     '''
