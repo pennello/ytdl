@@ -55,10 +55,10 @@ Just the IDs of the channels to which this channel is subscribed will be
 imported.  Now you can run the following command to fetch and download
 the latest subscriptions that you haven't yet seen.
 
-    ytdl cron dlsubs -s <where/to/save/the/videos>
+    ytdl cron dlsubs --save <where/to/save/the/videos>
 
 Note that in the first run through, `ytdl` will not actually download
-anything.  Instead, it will store the most-recent video IDs in each
+anything.  Instead, it will just store the most-recent video IDs in each
 channel.  Future invocations will continue to update this "seen state",
 so `ytdl` won't download the same videos multiple times.
 
