@@ -30,9 +30,11 @@ class Subs(Group):
         help='subscription type')
       p.add_argument('id',nargs=nargs,help='subscription id')
 
-    descr = ('List subscriptions. Optionally, list all seen video IDs for a '
+    descr = ('List subscriptions. Optionally, list all seen videos for a '
      'given subscription.')
     ls = subs_commands.add_parser('ls',description=descr,help=descr)
+    ls.add_argument('-t','--title',action='store_true',default=False,
+      help='show titles')
     addsub(ls,True)
 
     descr = 'Add subscription. Performs validation.'
@@ -67,10 +69,20 @@ class Subs(Group):
     if args.type and args.id:
       sub = self.db().load((args.type,args.id))
       if sub.seen is not None:
-        for vid in sub.seen:
-          self.out(vid)
+        if args.title:
+          titles = self.client().titles('video',sub.seen,safe=True)
+          for vid,title in zip(sub.seen,titles):
+            self.out('%s %s' % (vid,title))
+        else:
+          for vid in sub.seen: self.out(vid)
     else:
-      for sub in self.db().loadall(): self.out(sub)
+      subs = self.db().loadall()
+      if args.title:
+        subs = list(subs) # loadall returns an iterator.
+        Sub.titles(self.client(),subs)
+        for sub in subs: self.out(sub.titleview())
+      else:
+        for sub in subs: self.out(sub.idview())
 
   def add(self,args):
     key = args.type,args.id
