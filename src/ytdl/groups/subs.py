@@ -45,7 +45,7 @@ class Subs(Group):
     rm = subs_commands.add_parser('rm',description=descr,help=descr)
     addsub(rm,False)
 
-    descr=('Fetch and print video IDs of latest uploads from subscriptions. '
+    descr = ('Fetch and print video IDs of latest uploads from subscriptions. '
       'Uses seen state to avoid re-printing video IDs of uploads already '
       'seen. Combined with the -s option, makes for ideal periodic input to '
       "youtube-dl. See 'cron dlsubs'.  Optionally, perform logic for just one "

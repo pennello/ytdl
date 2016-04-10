@@ -28,7 +28,7 @@ class Group(object):
     '''
     raise NotImplementedError()
   def client(self):
-    '''Return client instance form Main instance.'''
+    '''Return client instance from Main instance.'''
     return self.main.client()
   def log(self,*a):
     '''Call log method on Main instance.'''
@@ -37,7 +37,7 @@ class Group(object):
     '''Output to standard out.'''
     util.out(s)
   def logpath(self,name):
-    '''Given a name, prints full path to log file.'''
+    '''Given a name, return full path to log file.'''
     return self.main.logpath(name)
   @contextmanager
   def logfile(self,name):
