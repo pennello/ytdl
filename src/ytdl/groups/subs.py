@@ -30,9 +30,11 @@ class Subs(Group):
         help='subscription type')
       p.add_argument('id',nargs=nargs,help='subscription id')
 
-    descr = ('List subscriptions. Optionally, list all seen video IDs for a '
+    descr = ('List subscriptions. Optionally, list all seen videos for a '
      'given subscription.')
     ls = subs_commands.add_parser('ls',description=descr,help=descr)
+    ls.add_argument('-t','--title',action='store_true',default=False,
+      help='show titles')
     addsub(ls,True)
 
     descr = 'Add subscription. Performs validation.'
@@ -43,7 +45,7 @@ class Subs(Group):
     rm = subs_commands.add_parser('rm',description=descr,help=descr)
     addsub(rm,False)
 
-    descr=('Fetch and print video IDs of latest uploads from subscriptions. '
+    descr = ('Fetch and print video IDs of latest uploads from subscriptions. '
       'Uses seen state to avoid re-printing video IDs of uploads already '
       'seen. Combined with the -s option, makes for ideal periodic input to '
       "youtube-dl. See 'cron dlsubs'.  Optionally, perform logic for just one "
@@ -53,12 +55,17 @@ class Subs(Group):
       help='save latest video ids; defaults to %(default)s')
     addsub(latest,True)
 
+    descr = ('Perform validation on all subscriptions. If all is well, '
+      'nothing is printed and the exit code is 0. Otherwise, all invalid '
+      'subscriptions are printed to standard out and the exit code is 1.')
+    validate = subs_commands.add_parser('validate',description=descr,help=descr)
+
   def import_(self,args):
     '''
     Funny name for this command due to import being a language-reserved
     keyword.  See the Main.run implementation.
     '''
-    if not self.client().isvalid(('channel',args.channelid)):
+    if not self.client().isvalidsingle(('channel',args.channelid)):
       raise Error(1,self.errinval)
     for chid in self.client().subs(args.channelid):
       self.db().add(('channel',chid))
@@ -67,14 +74,24 @@ class Subs(Group):
     if args.type and args.id:
       sub = self.db().load((args.type,args.id))
       if sub.seen is not None:
-        for vid in sub.seen:
-          self.out(vid)
+        if args.title:
+          titles = self.client().titles('video',sub.seen,safe=True)
+          for vid,title in zip(sub.seen,titles):
+            self.out('%s %s' % (vid,title))
+        else:
+          for vid in sub.seen: self.out(vid)
     else:
-      for sub in self.db().loadall(): self.out(sub)
+      subs = self.db().loadall()
+      if args.title:
+        subs = list(subs) # loadall returns an iterator.
+        Sub.titles(self.client(),subs)
+        for sub in subs: self.out(sub.titleview())
+      else:
+        for sub in subs: self.out(sub.idview())
 
   def add(self,args):
     key = args.type,args.id
-    if not self.client().isvalid(key):
+    if not self.client().isvalidsingle(key):
       raise Error(1,self.errinval)
     try: self.db().add(key)
     except AlreadyExists:
@@ -109,3 +126,13 @@ class Subs(Group):
     else:
       for sub in self.db().loadall():
         for vid in impl(sub): yield vid
+
+  def validate(self,args):
+    subs = list(self.db().loadall()) # loadall returns an iterator.
+    Sub.validate(self.client(),subs)
+    ret = 0
+    for sub in subs:
+      if not sub.valid:
+        self.out(sub.idview())
+        ret = 1
+    return ret

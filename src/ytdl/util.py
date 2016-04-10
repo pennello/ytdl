@@ -5,6 +5,7 @@
 import errno
 import os
 import sys
+from .error import Error
 
 def segment(itr,n):
   '''
@@ -25,8 +26,13 @@ def write(fobj,x):
   encoding to UTF-8 if required.
   '''
   if isinstance(x, unicode): x = x.encode('utf8')
-  fobj.write('%s\n' % x)
-  fobj.flush()
+  try:
+    fobj.write('%s\n' % x)
+    fobj.flush()
+  except IOError,e:
+    # Omit large and usually-unhelpful stack trace.
+    if e.errno != errno.EPIPE: raise
+    raise Error(74,'broken pipe')
 
 def log(x):
   '''Write to standard error.'''

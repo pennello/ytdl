@@ -4,6 +4,7 @@
 
 import errno
 import os
+from collections import defaultdict
 from . import util
 
 class Error(Exception):
@@ -22,6 +23,12 @@ class Sub(object):
 
   Subclasses are expected to define lsmax: the number of seen videos to
   list.
+
+  Subscription-individual methods for getting the title or whether or
+  not a subscription is valid are not provided due to the common case of
+  wanting to fetch in bulk, and not one-by-one.  However, there is a
+  bulk titles and isvalid class method which populate the title and
+  valid attribute on given subscription objects.
   '''
 
   types = () # This is populated below, and transformed into a dict.
@@ -36,6 +43,55 @@ class Sub(object):
   def key(self):
     '''Return (type,id) key tuple.'''
     return self.type(),self.id
+
+  @classmethod
+  def _popattr(cls,client,subs,apicall,attr):
+    '''
+    Populate a subscription attribute on given subscription objects by
+    making a bulk API call.
+
+    apicall: string specifying client method to call.
+
+    attr: attribute to set on subscription objects.
+
+    If a subscription object already has the specified attribute, this
+    is ignored.  This may be updated in the future to avoid superfluous
+    API calls.
+
+    Note that a client is required since this is a class method.
+    '''
+    # First, consolidate into batches by type.
+    bytype = defaultdict(list)
+    for sub in subs: bytype[sub.type()].append(sub)
+    for type,subs in bytype.items():
+      result = getattr(client,apicall)(type,[sub.id for sub in subs])
+      for sub,x in zip(subs,result): setattr(sub,attr,x)
+
+  @classmethod
+  def titles(cls,client,subs):
+    '''
+    Populate the title attribute on given subscription objects.
+
+    If a subscription object already has a title attribute, this is
+    ignored.  This may be updated in the future to avoid superfluous
+    API calls.
+
+    Note that a client is required since this is a class method.
+    '''
+    cls._popattr(client,subs,'titles','title')
+
+  @classmethod
+  def validate(cls,client,subs):
+    '''
+    Populate the valid attribute on given subscription objects.
+
+    If a subscription object already has a valid attribute, this is
+    ignored.  This may be updated in the future to avoid superfluous
+    API calls.
+
+    Note that a client is required since this is a class method.
+    '''
+    cls._popattr(client,subs,'isvalid','valid')
 
   def __init__(self,client,id,seen):
     '''
@@ -54,10 +110,10 @@ class Sub(object):
     '''
     raise NotImplementedError()
 
-  def __str__(self):
+  def idview(self):
     '''
-    Nice string representation of the subscription.  Ideal for printing
-    for the user to see.
+    Return string representation of the subscription that includes the
+    type of the subscription, its ID, and the seen video IDs.
     '''
     def formatseen():
       if self.seen is None: return ''
@@ -66,6 +122,15 @@ class Sub(object):
       if el: seen += ' ...'
       return seen
     return '%s %s seen %s' % (self.type(),self.id,formatseen())
+
+  def titleview(self):
+    '''
+    Return string representation of the subscription that includes the
+    type of the subscription, its ID, and its title.  It is an error to
+    call this without having populated the title attribute for the
+    subscription with Subs.titles.
+    '''
+    return '%s %s title %s' % (self.type(),self.id,self.title)
 
 class Channel(Sub):
   '''Channel subscriptions.'''

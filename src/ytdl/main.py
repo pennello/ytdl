@@ -112,11 +112,10 @@ class Main(object):
     if self.args.command == 'import':
       self.args.command = 'import_' # Hacky, hacky.
     command = getattr(group,self.args.command)
-    try: command(self.args)
+    try: return command(self.args) or 0
     except Error,e:
       self.error(e.msg)
       return e.code
     except KeyboardInterrupt:
       self.error('caught interrupt')
       return 1
-    return 0
