@@ -132,10 +132,24 @@ class Client(object):
       return item['contentDetails']['videoId']
     for x in self.pcall('playlistItems',params,itemfn): yield x
 
-  def isvalid(self,(type,id)):
+  def isvalid(self,type,ids):
+    '''
+    Yield booleans that indicate whether the specified objects are
+    valid.  type: 'channel' or 'playlist'.  Performs batched calls.
+    '''
+    # The YouTube API gives us back items potentially out-of-order from
+    # what we requested, so we have to rectify the ordering ourselves.
+    def call(ids):
+      params = dict(part='id',id=','.join(ids))
+      def itemfn(item): return item['id']
+      for x in self.pcall(type + 's',params,itemfn): yield x
+    for seg in util.segment(ids,self.batchsize):
+      valid = set(id for id in call(seg))
+      for id in seg: yield id in valid
+
+  def isvalidsingle(self,(type,id)):
     '''
     Return whether specified object is valid.  type: 'channel' or
     'playlist'.
     '''
-    params = dict(part='id',id=id)
-    return bool(self.call(type + 's',params)['pageInfo']['totalResults'])
+    return tuple(self.isvalid(type,(id,)))[0]
