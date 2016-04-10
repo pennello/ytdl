@@ -45,7 +45,7 @@ YouTube Data API (v3).
 Next, import your current YouTube subscriptions.  First, if you don't
 have it, get the channel ID for your user.
 
-    ytdl id get <yourusername>
+    ytdl id getuser <yourusername>
 
 Then, import the subscriptions for that channel ID.
 
