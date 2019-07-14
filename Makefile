@@ -18,7 +18,7 @@ $(zip): $(pyo)
 	cd src && echo $(patsubst src/%, %, $^) | xargs zip -9 ../$@
 
 %.pyo: %.py
-	python -OOm py_compile $^
+	python2 -OOm py_compile $^
 
 clean:
 	rm -f $(bin) $(zip) $(pyo)
