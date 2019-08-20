@@ -9,6 +9,6 @@ def args(a):
   Pass in arguments you want for youtube-dl.  Will provide some base
   common arguments.
   '''
-  r = 'youtube-dl','-i'
+  r = 'youtube-dl','-i','--restrict-filenames'
   if needshack(): r += '--no-check-certificate',
   return r + a
