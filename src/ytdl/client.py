@@ -38,7 +38,9 @@ class Client(object):
       with closing(urllib2.urlopen(url)) as u:
         return json.load(u)
     except urllib2.HTTPError,e:
-      try: util.log('client call http error; body: %r' % e.read())
+      try:
+        util.log('client call %r %r http error; body: %r' %
+          (path,params,e.read()))
       except Exception: pass
       raise
 
