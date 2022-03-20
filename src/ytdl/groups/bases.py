@@ -44,7 +44,7 @@ class Group(object):
     '''Context manager for log file.  See logpath.'''
     logpath = self.logpath(name)
     util.makedirs(os.path.dirname(logpath),exist_ok=True)
-    with open(logpath,'ab') as logfile: yield logfile
+    with open(logpath,'a') as logfile: yield logfile
   def db(self):
     '''Return subscriptions database interface from Main instance.'''
     return self.main.db

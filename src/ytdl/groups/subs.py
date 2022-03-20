@@ -14,7 +14,8 @@ class Subs(Group):
   def parse(self,cmdgrp):
     descr = 'Manage subscriptions.'
     subs = cmdgrp.add_parser('subs',description=descr,help=descr)
-    subs_commands = subs.add_subparsers(dest='command',metavar='command')
+    subs_commands = subs.add_subparsers(dest='command',required=True,
+      metavar='command')
 
     descr = ('Import subscriptions from YouTube. '
       'Adds to, but does not overwrite local DB.')

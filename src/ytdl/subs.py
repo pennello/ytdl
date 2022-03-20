@@ -196,24 +196,24 @@ class Db(object):
 
   def init(self):
     '''Ensure type directory paths exist on disk.'''
-    for type in Sub.types.iterkeys():
+    for type in Sub.types.keys():
       util.makedirs(self.typetopath(type),exist_ok=True)
 
   def save(self,sub):
     '''Save subscription to disk.'''
-    with open(self.keytopath(sub.key()),'wb') as f:
+    with open(self.keytopath(sub.key()),'w') as f:
       if sub.seen: f.write('\n'.join(sub.seen) + '\n')
 
   def allkeys(self):
     '''Yield keys of all subscriptions found on disk.'''
-    for type in Sub.types.iterkeys():
+    for type in Sub.types.keys():
       for id in os.listdir(self.typetopath(type)):
         if self.isjunk(id): continue
         yield type,id
 
   def load(self,key):
     '''Load subscription specified by key.'''
-    with open(self.keytopath(key),'rb') as f: data = f.read()
+    with open(self.keytopath(key),'r') as f: data = f.read()
     data = data.strip()
     if data: data = data.split('\n')
     else: data = None
@@ -228,7 +228,7 @@ class Db(object):
   def add(self,key):
     '''Add subscription indicated by key.'''
     try: fd = os.open(self.keytopath(key),os.O_CREAT | os.O_EXCL)
-    except OSError,e:
+    except OSError as e:
       if e.errno != errno.EEXIST: raise
       raise AlreadyExists()
     os.close(fd)
@@ -236,6 +236,6 @@ class Db(object):
   def rm(self,key):
     '''Remove subscription indicated by key.'''
     try: os.unlink(self.keytopath(key))
-    except OSError,e:
+    except OSError as e:
       if e.errno != errno.ENOENT: raise
       raise NotFound()
