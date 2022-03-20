@@ -94,7 +94,8 @@ class Main(object):
     parser = ArgumentParser(self.prog,description=descr)
     parser.add_argument('-v','--verbose',action='store_true',default=False,
       help='enable verbose logging to standard error')
-    cmdgrp = parser.add_subparsers(dest='group',metavar='command_group')
+    cmdgrp = parser.add_subparsers(dest='group',required=True,
+      metavar='command_group')
     for group in self.groups.values(): group.parse(cmdgrp)
     return parser.parse_args(argv)
 

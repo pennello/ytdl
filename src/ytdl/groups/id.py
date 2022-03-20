@@ -9,7 +9,8 @@ class Id(Group):
   def parse(self,cmdgrp):
     descr = 'Manage channel IDs.'
     id = cmdgrp.add_parser('id',description=descr,help=descr)
-    id_commands = id.add_subparsers(dest='command',metavar='command')
+    id_commands = id.add_subparsers(dest='command',required=True,
+      metavar='command')
     descr = 'Get user channel ID.'
     getuser = id_commands.add_parser('getuser',description=descr,help=descr)
     getuser.add_argument('name', help='username of user itse channel id to '

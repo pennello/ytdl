@@ -15,7 +15,8 @@ class Cron(Group):
   def parse(self,cmdgrp):
     descr = 'Cron jobs.'
     cron = cmdgrp.add_parser('cron',description=descr,help=descr)
-    cron_commands = cron.add_subparsers(dest='command',metavar='command')
+    cron_commands = cron.add_subparsers(dest='command',required=True,
+      metavar='command')
     logpath = self.logpath(self.logname('dlsubs'))
     descr = (
       'Change to output directory and pull in latest subscriptions, saving the '
