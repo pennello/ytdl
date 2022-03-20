@@ -25,11 +25,10 @@ def write(fobj,x):
   Write object x to file object, including newline and flush, also
   encoding to UTF-8 if required.
   '''
-  if isinstance(x, unicode): x = x.encode('utf8')
   try:
     fobj.write('%s\n' % x)
     fobj.flush()
-  except IOError,e:
+  except IOError as e:
     # Omit large and usually-unhelpful stack trace.
     if e.errno != errno.EPIPE: raise
     raise Error(74,'broken pipe')
@@ -46,5 +45,5 @@ def out(x=''):
 def makedirs(name,mode=0o777,exist_ok=False):
   '''Like Python 3's makedirs with exist_ok.'''
   try: os.makedirs(name,mode)
-  except os.error,e:
+  except os.error as e:
     if not exist_ok or e.errno != errno.EEXIST: raise

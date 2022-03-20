@@ -10,9 +10,9 @@ directory), and its run method is invoked.
 import errno
 import os.path
 
-from ConfigParser import ConfigParser
 from argparse import ArgumentParser
 from collections import OrderedDict
+from configparser import ConfigParser
 
 from userdirs import UserDirs
 
@@ -65,9 +65,9 @@ class Main(object):
     '''
     conf = ConfigParser()
     try:
-      with open(self.confpath(),'rb') as f:
+      with open(self.confpath(),'r') as f:
         conf.readfp(f)
-    except IOError,e:
+    except IOError as e:
       if e.errno != errno.ENOENT: raise
       return None
     return conf
@@ -95,7 +95,7 @@ class Main(object):
     parser.add_argument('-v','--verbose',action='store_true',default=False,
       help='enable verbose logging to standard error')
     cmdgrp = parser.add_subparsers(dest='group',metavar='command_group')
-    for group in self.groups.itervalues(): group.parse(cmdgrp)
+    for group in self.groups.values(): group.parse(cmdgrp)
     return parser.parse_args(argv)
 
   def log(self,x):
@@ -113,7 +113,7 @@ class Main(object):
       self.args.command = 'import_' # Hacky, hacky.
     command = getattr(group,self.args.command)
     try: return command(self.args) or 0
-    except Error,e:
+    except Error as e:
       self.error(e.msg)
       return e.code
     except KeyboardInterrupt:

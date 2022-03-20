@@ -5,9 +5,11 @@
 # TODO Use `yield from` when available (Python 3?).
 
 import json
-import urllib2
+import urllib.error
+import urllib.parse
+import urllib.request
+
 from contextlib import closing
-from urllib import urlencode
 from . import util
 
 class Error(Exception):
@@ -33,11 +35,11 @@ class Client(object):
     '''Utility function for making calls against YouTube API.'''
     params = params.copy()
     params['key'] = self.key
-    url = '%s/%s?%s' % (self.apibase,path,urlencode(params))
+    url = '%s/%s?%s' % (self.apibase,path,urllib.parse.urlencode(params))
     try:
-      with closing(urllib2.urlopen(url)) as u:
+      with closing(urllib.request.urlopen(url)) as u:
         return json.load(u)
-    except urllib2.HTTPError,e:
+    except urllib.error.HTTPError as e:
       try:
         util.log('client call %r %r http error; body: %r' %
           (path,params,e.read()))
@@ -149,9 +151,10 @@ class Client(object):
       valid = set(id for id in call(seg))
       for id in seg: yield id in valid
 
-  def isvalidsingle(self,(type,id)):
+  def isvalidsingle(self,type_id):
     '''
     Return whether specified object is valid.  type: 'channel' or
     'playlist'.
     '''
+    type,id = type_id
     return tuple(self.isvalid(type,(id,)))[0]
