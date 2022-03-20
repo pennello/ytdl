@@ -63,14 +63,14 @@ class Client(object):
   def userchannelid(self,username):
     '''Return channel ID of user with the given username.'''
     params = dict(part='id',forUsername=username)
-    items = self.call('channels',params)['items']
+    items = self.call('channels',params).get('items',())
     if not items: raise NotFound()
     return items[0]['id']
 
   def videochannelid(self,videoid):
     '''Return channel ID of video with the given ID.'''
     params = dict(part='id,snippet',id=videoid)
-    items = self.call('videos',params)['items']
+    items = self.call('videos',params).get('items',())
     if not items: raise NotFound()
     return items[0]['snippet']['channelId']
 
