@@ -19,6 +19,10 @@ class Id(Group):
     getvideo = id_commands.add_parser('getvideo',description=descr,help=descr)
     getvideo.add_argument('id',help='video id of video itse channel id to '
       'get')
+    descr = 'Search for channel ID.'
+    search = id_commands.add_parser('search',description=descr,help=descr)
+    search.add_argument('query',
+      help='query by which to search for channel id')
 
   def getuser(self,args):
     try: chid = self.client().userchannelid(args.name)
@@ -29,3 +33,8 @@ class Id(Group):
     try: chid = self.client().videochannelid(args.id)
     except client.NotFound: raise Error(127,'video not found')
     self.out(chid)
+
+  def search(self,args):
+    try: results = self.client().searchchannelid(args.query)
+    except client.NotFound: raise Error(127,'vanity not found')
+    self.out('\n'.join(' '.join(result) for result in results))

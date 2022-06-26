@@ -74,6 +74,13 @@ class Client(object):
     if not items: raise NotFound()
     return items[0]['snippet']['channelId']
 
+  def searchchannelid(self,query):
+    '''Return (channel ID, title) tuples by searching for given query.'''
+    params = dict(part='snippet',type='channel',q=query)
+    items = self.call('search',params).get('items',())
+    if not items: raise NotFound()
+    return tuple((i['id']['channelId'],i['snippet']['title']) for i in items)
+
   def subs(self,channelid):
     '''
     Yield channel IDs of channels to whom the channel with the given
