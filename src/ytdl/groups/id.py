@@ -13,11 +13,11 @@ class Id(Group):
       metavar='command')
     descr = 'Get user channel ID.'
     getuser = id_commands.add_parser('getuser',description=descr,help=descr)
-    getuser.add_argument('name', help='username of user itse channel id to '
+    getuser.add_argument('name',help='username of user itse channel id to '
       'get')
     descr = 'Get video channel ID.'
     getvideo = id_commands.add_parser('getvideo',description=descr,help=descr)
-    getvideo.add_argument('id', help='video id of video itse channel id to '
+    getvideo.add_argument('id',help='video id of video itse channel id to '
       'get')
 
   def getuser(self,args):
